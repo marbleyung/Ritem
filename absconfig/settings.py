@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+from .simplejwt import SIMPLE_JWT
+
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # pip
     'rest_framework',
+    'rest_framework.authtoken',
     'drf_yasg',
     'djoser',
     'phonenumbers',
@@ -123,3 +126,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'account.CustomUser'
+
+LOGOUT_REDIRECT_URL = 'swagger/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.SessionAuthentication',
+                                       'rest_framework.authentication.TokenAuthentication',
+                                       'rest_framework_simplejwt.authentication.JWTAuthentication',
+                                       ]
+}
+
+SIMPLE_JWT = SIMPLE_JWT
