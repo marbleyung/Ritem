@@ -11,6 +11,7 @@ class CustomUser(AbstractUser):
     bio = models.CharField(max_length=255, blank=True, null=True)
     is_online = models.BooleanField(default=True)
 
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ('email', 'phone',)
 
     class Meta:

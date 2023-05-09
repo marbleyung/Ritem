@@ -135,5 +135,6 @@ REST_FRAMEWORK = {
                                        'rest_framework_simplejwt.authentication.JWTAuthentication',
                                        ]
 }
+AUTHENTICATION_BACKENDS = ('account.backends.EmailBackend',)
 
 SIMPLE_JWT = SIMPLE_JWT
