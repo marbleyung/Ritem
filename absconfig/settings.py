@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'phonenumbers',
     'phonenumber_field',
     # apps
-    'account',
+    'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [
@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.SessionAuthentication',
                                        'rest_framework.authentication.TokenAuthentication',
                                        'rest_framework_simplejwt.authentication.JWTAuthentication',
-                                       ]
+                                       ],
 }
 AUTHENTICATION_BACKENDS = ('account.backends.EmailBackend',)
 
