@@ -38,19 +38,45 @@ class UserProfileView(viewsets.GenericViewSet,
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
                           IsUserSelfUser]
 
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    model = CustomUser
+    permission_classes = (permissions.IsAuthenticated,
+                          IsUserSelfUser)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        self.object = self.get_object()
+        print(self.object)
+        serializer = self.get_serializer(data=request.data)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
+        if serializer.is_valid():
+            old_password = serializer.data.get("old_password")
+            new_password = serializer.data.get("new_password")
 
-        return Response(serializer.data)
+            if not self.object.check_password(old_password):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            if old_password == new_password:
+                return Response({"Error": ["Your new password can't be identical to your old password."]},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if len(new_password) < 8 or len(new_password) > 30 or new_password.isalpha() or new_password.isdigit():
+                return Response({"Error": ["Password has to be 8...30 symbols"
+                                           " and can't be made of letters or digits only."]},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_update(self, serializer, **kwargs):
-        serializer.save()
+            self.object.set_password(new_password)
+            self.object.save()
+            response = {
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

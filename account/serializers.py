@@ -7,14 +7,19 @@ class UserImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserImage
-        fields = ('image', 'owner')
+        fields = ('image', 'owner', 'id',)
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'password', 'first_name', 'last_name',
-                  'username', 'phone', 'email', 'avatar',)
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ('id', 'first_name', 'last_name',
+                  'username', 'phone', 'email', 'avatar',
+                  'is_online',)
 
+
+class ChangePasswordSerializer(serializers.Serializer):
+    model = CustomUser
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     # apps
     'account.apps.AccountConfig',
+    'category',
 ]
 
 MIDDLEWARE = [

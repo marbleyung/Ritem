@@ -1,15 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-
-
-def avatar_path(instance, filename):
-    return '/'.join(['user_image', str(instance.owner), filename])
+from .models_services import *
 
 
 class UserImage(models.Model):
     owner = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=avatar_path, blank=True)
+    image = models.ImageField(upload_to=avatar_path, blank=True,
+                              validators=[normal_filesize])
 
 
 class CustomUser(AbstractUser):
