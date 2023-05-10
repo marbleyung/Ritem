@@ -2,11 +2,11 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
-def avatar_path(instance, filename):
-    return '/'.join(['user_image', str(instance.owner), filename])
+def category_logo_path(instance, filename):
+    return '/'.join(['category', str(instance.name), filename])
 
 
-def normal_avatar_size(file):
+def normal_category_logo_size(file):
     MAX_SIZE = 2 * 1024 * 1024
     if file.size > MAX_SIZE:
         raise ValidationError(

@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'djoser',
     'phonenumbers',
     'phonenumber_field',
+    'mptt',
     # apps
     'account.apps.AccountConfig',
     'category',

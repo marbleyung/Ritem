@@ -7,7 +7,7 @@ from .models_services import *
 class UserImage(models.Model):
     owner = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
     image = models.ImageField(upload_to=avatar_path, blank=True,
-                              validators=[normal_filesize])
+                              validators=[normal_avatar_size])
 
 
 class CustomUser(AbstractUser):
