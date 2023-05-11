@@ -4,7 +4,7 @@ from .models import Category, Tag
 
 
 class CategoryAdmin(mptt.admin.MPTTModelAdmin):
-    pass
+    list_display = ('name', 'id')
 
 
 admin.site.register(Category, CategoryAdmin)
