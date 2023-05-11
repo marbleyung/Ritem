@@ -22,6 +22,9 @@ class Item(models.Model):
     def __str__(self):
         return f"{self.category}: {self.name}"
 
+    @property
+    def images(self):
+        return self.image_set.all()
 
 class Image(models.Model):
     image = models.FileField(upload_to=item_image_path,
@@ -37,3 +40,4 @@ class Image(models.Model):
     def save(self, *args, **kwargs):
         self.extension = str(self.image).split('.')[-1]
         super(Image, self).save(*args, **kwargs)
+

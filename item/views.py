@@ -1,4 +1,4 @@
-from .serializers import ImageSerializer, ItemSerializer
+from .serializers import *
 from rest_framework import generics, mixins, viewsets
 from .models import Image, Item
 from rest_framework import permissions
@@ -29,7 +29,7 @@ class ImageRDView(generics.DestroyAPIView,
 
 class ItemCreateView(generics.CreateAPIView):
     queryset = Item.objects.all()
-    serializer_class = ItemSerializer
+    serializer_class = ItemCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
@@ -40,12 +40,14 @@ class ItemCreateView(generics.CreateAPIView):
         image_serializer = ImageSerializer(data=image_data, many=True)
         image_serializer.is_valid(raise_exception=True)
         image_serializer.save(owner=self.request.user, item=item)
-        print(self.request.data)
 
-        print('line44')
         for tag_name in tags:
             tag, created = Tag.objects.get_or_create(name=tag_name)
             item.tags.add(tag)
-        print('line48')
 
         return item
+
+
+class ItemListView(generics.ListAPIView):
+    serializer_class = ItemGetSerializer
+    queryset = Item.objects.all()
