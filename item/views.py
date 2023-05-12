@@ -87,3 +87,11 @@ class ItemDetailView(generics.RetrieveAPIView,
             tag, created = Tag.objects.get_or_create(name=tag_name)
             item.tags.add(tag)
         serializer.save()
+
+    def delete(self, request, *args, **kwargs):
+        print(self.kwargs['pk'])
+        images = Item.objects.get(pk=self.kwargs['pk']).images
+        for image in images:
+            delete_image(image.pk)
+
+        return self.destroy(request, *args, **kwargs)
