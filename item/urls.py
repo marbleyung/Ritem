@@ -8,4 +8,5 @@ urlpatterns = [
     path('image/<int:pk>/', ImageRDView.as_view()),
     path('create-item/', ItemCreateView.as_view()),
     path('items/', ItemListView.as_view()),
+    path('items/<int:pk>/', ItemDetailView.as_view()),
 ]

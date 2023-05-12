@@ -14,6 +14,8 @@ class Item(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                              default=1)
     # reports = models.ManyToManyField(Report)
 
     class Meta:
@@ -25,6 +27,11 @@ class Item(models.Model):
     @property
     def images(self):
         return self.image_set.all()
+
+    @property
+    def count_images(self):
+        return self.images.count
+
 
 class Image(models.Model):
     image = models.FileField(upload_to=item_image_path,

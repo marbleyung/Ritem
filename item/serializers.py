@@ -12,7 +12,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = ('image',)
+        fields = ('image', 'id')
 
 
 class ItemCreateSerializer(serializers.ModelSerializer):
@@ -22,19 +22,23 @@ class ItemCreateSerializer(serializers.ModelSerializer):
         use_url=True,
         required=True
     )
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Item
         fields = ('category',
+                  'id',
                   'tags',
                   'name',
                   'description',
+                  'owner',
                   'image',
                   )
 
 
 class ItemGetSerializer(serializers.ModelSerializer):
     images = ImageSerializer(read_only=True, many=True)
+    tags = TagSerializer(many=True, required=False)
 
     class Meta:
         model = Item
@@ -43,6 +47,13 @@ class ItemGetSerializer(serializers.ModelSerializer):
                   'name',
                   'description',
                   'images',
-                  'edited_at')
+                  'edited_at',
+                  'owner',
+                  'id',
+                  )
+        extra_kwargs = {'owner': {'read_only': True},
+                        'id': {'read_only': True},
+                        'edited_at': {'read_only': True}}
+
         depth = 0
 

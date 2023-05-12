@@ -137,7 +137,10 @@ REST_FRAMEWORK = {
                                        'rest_framework.authentication.TokenAuthentication',
                                        'rest_framework_simplejwt.authentication.JWTAuthentication',
                                        ],
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M",
 }
 AUTHENTICATION_BACKENDS = ('account.backends.EmailBackend',)
 
 SIMPLE_JWT = SIMPLE_JWT
+
+IMAGES_LIMIT_FOR_EACH_ITEM = 10
