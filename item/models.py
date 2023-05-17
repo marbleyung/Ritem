@@ -15,7 +15,7 @@ class Item(models.Model):
     edited_at = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
-                              default=1)
+                              default=1, related_name='my_items')
     # reports = models.ManyToManyField(Report)
 
     class Meta:
@@ -36,7 +36,8 @@ class Item(models.Model):
 class Image(models.Model):
     image = models.FileField(upload_to=item_image_path,
                              validators=[normal_item_image_size])
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                              related_name='my_images')
     uuid = models.UUIDField(default=uuid.uuid4)
     extension = models.CharField(max_length=10, blank=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)

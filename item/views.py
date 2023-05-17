@@ -2,7 +2,7 @@ from rest_framework.response import Response
 
 from absconfig.settings import IMAGES_LIMIT_FOR_EACH_ITEM
 from .serializers import *
-from rest_framework import generics, mixins, viewsets
+from rest_framework import generics
 from .models import Image, Item
 from rest_framework import permissions
 from account.perms import IsObjectOwner
@@ -30,8 +30,7 @@ class ImageRDView(generics.DestroyAPIView,
         image_item = Image.objects.get(pk=kwargs['pk']).item
         if image_item.count_images() == 1:
             return Response(data=
-                            {'message':
-                            'This item has only 1 image, the image cant be deleted'})
+                            {'message': 'This item has only 1 image, the image cant be deleted'})
         delete_image(kwargs['pk'])
         return self.destroy(request, *args, **kwargs)
 
