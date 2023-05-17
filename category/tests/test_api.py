@@ -43,7 +43,12 @@ class CategoryDetailTestCase(APITestCase):
         self.url2 = reverse('category:category',
                             kwargs={'pk': self.category2.pk})
 
-        self.user = CustomUser.objects.create(username='testroot', is_superuser=True)
+        self.user1 = CustomUser.objects.create(username='testroot1',
+                                               email='testroot1@mail.com',
+                                               is_superuser=True)
+        self.user2 = CustomUser.objects.create(username='testroot2',
+                                               email='testroot2@mail.com',
+                                               is_superuser=False)
 
     def test_get(self):
 
@@ -68,12 +73,19 @@ class CategoryDetailTestCase(APITestCase):
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
 
     def test_patch(self):
-        self.client.force_login(self.user)
+        self.client.force_login(self.user1)
         name = 'Test Category 1 upd'
         response_after_patch = self.client.patch(self.url1,
                                      data={'name': 'Test Category 1 upd'},
                                      )
         self.assertEqual(response_after_patch.data['name'], name)
+
+    def test_patch_permission(self):
+        self.client.force_login(self.user2)
+        response_after_patch = self.client.patch(self.url1,
+                                     data={'name': 'Test Category 1 upd'},
+                                     )
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response_after_patch.status_code)
 
 
 class TagListTestCase(APITestCase):
@@ -107,7 +119,12 @@ class TagDetailTestCase(APITestCase):
         self.url1 = reverse('category:tag', args=(self.tag1.id, ))
         self.url2 = reverse('category:tag', args=(self.tag2.id, ))
 
-        self.user = CustomUser.objects.create(username='testroot', is_superuser=True)
+        self.user1 = CustomUser.objects.create(username='testroot1',
+                                               email='testroot1@mail.com',
+                                               is_superuser=True)
+        self.user2 = CustomUser.objects.create(username='testroot2',
+                                               email='testroot2@mail.com',
+                                               is_superuser=False)
 
     def test_get(self):
         response1 = self.client.get(self.url1)
@@ -116,7 +133,7 @@ class TagDetailTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response2.status_code)
 
     def test_patch(self):
-        self.client.force_login(self.user)
+        self.client.force_login(self.user1)
         response = self.client.patch(self.url1, data={
             'name': 'Test Tag 1 upd'
         })
@@ -124,6 +141,15 @@ class TagDetailTestCase(APITestCase):
         self.assertEqual(response.data['name'], get.data['name'])
 
     def test_delete(self):
-        self.client.force_login(self.user)
+        self.client.force_login(self.user1)
         delete = self.client.delete(self.url1)
         self.assertEqual(status.HTTP_204_NO_CONTENT, delete.status_code)
+
+    def test_permissions(self):
+        self.client.force_login(self.user2)
+        delete = self.client.delete(self.url1)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, delete.status_code)
+
+        patch = self.client.patch(self.url1,
+                                  data={'name': 'Lorem'})
+        self.assertEqual(status.HTTP_403_FORBIDDEN, patch.status_code)
