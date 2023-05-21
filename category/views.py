@@ -1,7 +1,6 @@
-from rest_framework import generics, viewsets, mixins
+from rest_framework import generics
 from .models import Category, Tag
 from .serializers import CategorySerializer, TagSerializer
-from rest_framework import permissions
 from . import perms
 
 
@@ -19,7 +18,6 @@ class CategoryDetailView(generics.RetrieveAPIView,
     serializer_class = CategorySerializer
     permission_classes = [perms.IsModeratorOrReadOnly]
 
-    http_method_names = ['get', 'patch', 'delete']
 
 
 class TagListView(generics.ListAPIView,
@@ -36,4 +34,3 @@ class TagDetailView(generics.RetrieveAPIView,
     serializer_class = TagSerializer
     permission_classes = [perms.IsModeratorOrReadOnly]
 
-    http_method_names = ['get', 'patch', 'delete']

@@ -67,7 +67,6 @@ class ItemDetailView(generics.RetrieveAPIView,
     serializer_class = ItemGetSerializer
     queryset = Item.objects.all()
     permission_classes = [IsOwnerOrReadOnly]
-    http_method_names = ['get', 'patch', 'delete']
 
     def perform_update(self, serializer):
         pk = self.kwargs['pk']
