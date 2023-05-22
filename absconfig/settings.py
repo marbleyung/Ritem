@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'category',
     'item',
-    'likes',
 ]
 
 MIDDLEWARE = [

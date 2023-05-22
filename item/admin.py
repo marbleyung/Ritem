@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Image, Item
+from .models import Image, Item, UserItemRelation
 
 
 class ImageInline(admin.TabularInline):
@@ -8,6 +8,7 @@ class ImageInline(admin.TabularInline):
 
 class ItemAdmin(admin.ModelAdmin):
     inlines = [ImageInline]
+
     class Meta:
         model = Item
         fields = ('category', 'name', 'tags', 'id',
@@ -15,6 +16,6 @@ class ItemAdmin(admin.ModelAdmin):
                   'edited_at', 'is_published',)
 
 
-
 admin.site.register(Image)
 admin.site.register(Item, ItemAdmin)
+admin.site.register(UserItemRelation)

@@ -16,6 +16,9 @@ class Item(models.Model):
     is_published = models.BooleanField(default=False)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
                               default=1, related_name='my_items')
+    users = models.ManyToManyField(CustomUser, through='UserItemRelation',
+                                   related_name='rated_items')
+
     # reports = models.ManyToManyField(Report)
 
     class Meta:
@@ -31,6 +34,24 @@ class Item(models.Model):
     @property
     def count_images(self):
         return self.images.count
+
+
+class UserItemRelation(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                             related_name='my_likes')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE,
+                             related_name='users_to_item')
+    like = models.BooleanField(null=True)
+
+    class Meta:
+        unique_together = ('user', 'item')
+
+    def __str__(self):
+        if self.like is False:
+            return f"{self.user} dislikes {self.item}"
+        elif self.like:
+            return f"{self.user} likes {self.item}"
+        return f"{self.user} haven't rated {self.item} yet"
 
 
 class Image(models.Model):

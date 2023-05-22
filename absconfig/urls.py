@@ -30,7 +30,6 @@ urlpatterns = [
     path('api/v1/', include('account.urls')),
     path('api/v1/', include('category.urls')),
     path('api/v1/', include('item.urls')),
-    path('api/v1/', include('likes.urls')),
 ]
 
 urlpatterns += swagger_urls

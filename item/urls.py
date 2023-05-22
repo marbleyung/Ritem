@@ -9,4 +9,5 @@ urlpatterns = [
     path('create-item/', ItemCreateView.as_view()),
     path('items/', ItemListView.as_view()),
     path('items/<int:pk>/', ItemDetailView.as_view()),
+    path('items/<int:pk>/like/', UserItemRelationView.as_view()),
 ]

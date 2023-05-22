@@ -1,8 +1,5 @@
-from django.db.models import Prefetch
-
-from .models import Image, Item
+from .models import Image, Item, UserItemRelation
 from rest_framework import serializers
-from category.models import Tag
 from category.serializers import TagSerializer
 
 
@@ -36,6 +33,30 @@ class ItemCreateSerializer(serializers.ModelSerializer):
                   )
 
 
+class UserItemRelationSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    item = serializers.ReadOnlyField(source='item.name')
+    relation = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserItemRelation
+        fields = ('user', 'item', 'relation')
+
+    def update(self, instance, validated_data):
+        relation, _ = UserItemRelation.objects.get_or_create(
+            item=instance, user=self.context['request'].user)
+        relation.like = validated_data['like']
+        relation.save()
+        return instance
+
+    def get_relation(self, instance):
+        relation = UserItemRelation.objects.get(
+            item=instance, user=self.context['request'].user)
+        return {"like": relation.like,
+                'item': instance.name,
+                'user': self.context['request'].user.username}
+
+
 class ItemGetSerializer(serializers.ModelSerializer):
     images = ImageSerializer(read_only=True, many=True)
     tags = TagSerializer(many=True, required=False)
@@ -56,4 +77,3 @@ class ItemGetSerializer(serializers.ModelSerializer):
                         'edited_at': {'read_only': True}}
 
         depth = 0
-

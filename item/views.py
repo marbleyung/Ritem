@@ -87,9 +87,20 @@ class ItemDetailView(generics.RetrieveAPIView,
         serializer.save()
 
     def delete(self, request, *args, **kwargs):
-        print(self.kwargs['pk'])
         images = Item.objects.get(pk=self.kwargs['pk']).images
         for image in images:
             delete_image(image.pk)
 
         return self.destroy(request, *args, **kwargs)
+
+
+class UserItemRelationView(generics.RetrieveAPIView,
+                           generics.UpdateAPIView,
+                           generics.DestroyAPIView):
+    serializer_class = UserItemRelationSerializer
+    queryset = Item.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_update(self, serializer):
+        like = self.request.data['like']
+        serializer.save(like=like)
