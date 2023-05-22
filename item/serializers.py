@@ -36,11 +36,11 @@ class ItemCreateSerializer(serializers.ModelSerializer):
 class UserItemRelationSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     item = serializers.ReadOnlyField(source='item.name')
-    relation = serializers.SerializerMethodField()
+    like = serializers.SerializerMethodField()
 
     class Meta:
         model = UserItemRelation
-        fields = ('user', 'item', 'relation')
+        fields = ('user', 'item', 'like')
 
     def update(self, instance, validated_data):
         relation, _ = UserItemRelation.objects.get_or_create(
@@ -49,17 +49,16 @@ class UserItemRelationSerializer(serializers.ModelSerializer):
         relation.save()
         return instance
 
-    def get_relation(self, instance):
+    def get_like(self, instance):
         relation = UserItemRelation.objects.get(
             item=instance, user=self.context['request'].user)
-        return {"like": relation.like,
-                'item': instance.name,
-                'user': self.context['request'].user.username}
+        return relation.like
 
 
 class ItemGetSerializer(serializers.ModelSerializer):
     images = ImageSerializer(read_only=True, many=True)
     tags = TagSerializer(many=True, required=False)
+    like = serializers.SerializerMethodField()
 
     class Meta:
         model = Item
@@ -71,9 +70,15 @@ class ItemGetSerializer(serializers.ModelSerializer):
                   'edited_at',
                   'owner',
                   'id',
+                  'like',
                   )
         extra_kwargs = {'owner': {'read_only': True},
                         'id': {'read_only': True},
                         'edited_at': {'read_only': True}}
 
         depth = 0
+
+    def get_like(self, instance):
+        relation = UserItemRelation.objects.get(
+            item=instance, user=self.context['request'].user)
+        return relation.like
