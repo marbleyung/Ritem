@@ -30,6 +30,8 @@ INSTALLED_APPS = [
     'phonenumbers',
     'phonenumber_field',
     'mptt',
+    'django_filters',
+    'corsheaders',
     # apps
     'account.apps.AccountConfig',
     'category',
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -117,6 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'static_cdn/'
 STATICFILES_DIRS = [BASE_DIR / 'static/']
 
 MEDIA_URL = 'media/'
@@ -138,9 +142,15 @@ REST_FRAMEWORK = {
                                        'rest_framework_simplejwt.authentication.JWTAuthentication',
                                        ],
     'DATETIME_FORMAT': "%Y-%m-%d %H:%M",
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }
+
 AUTHENTICATION_BACKENDS = ('account.backends.EmailBackend',)
 
 SIMPLE_JWT = SIMPLE_JWT
 
 IMAGES_LIMIT_FOR_EACH_ITEM = 10
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True

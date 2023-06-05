@@ -36,29 +36,23 @@ class ItemCreateSerializer(serializers.ModelSerializer):
 class UserItemRelationSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     item = serializers.ReadOnlyField(source='item.name')
-    like = serializers.SerializerMethodField()
 
     class Meta:
         model = UserItemRelation
-        fields = ('user', 'item', 'like')
+        fields = ('user', 'item',)
 
     def update(self, instance, validated_data):
-        relation, _ = UserItemRelation.objects.get_or_create(
-            item=instance, user=self.context['request'].user)
-        relation.like = validated_data['like']
-        relation.save()
+        instance.like = validated_data['like']
+        instance.save()
         return instance
-
-    def get_like(self, instance):
-        relation = UserItemRelation.objects.get(
-            item=instance, user=self.context['request'].user)
-        return relation.like
 
 
 class ItemGetSerializer(serializers.ModelSerializer):
     images = ImageSerializer(read_only=True, many=True)
     tags = TagSerializer(many=True, required=False)
-    like = serializers.SerializerMethodField()
+    annotated_likes = serializers.IntegerField(read_only=True)
+    annotated_dislikes = serializers.IntegerField(read_only=True)
+    rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Item
@@ -70,8 +64,11 @@ class ItemGetSerializer(serializers.ModelSerializer):
                   'edited_at',
                   'owner',
                   'id',
-                  'like',
+                  'annotated_likes',
+                  'annotated_dislikes',
+                  'rating',
                   )
+
         extra_kwargs = {'owner': {'read_only': True},
                         'id': {'read_only': True},
                         'edited_at': {'read_only': True}}
@@ -82,3 +79,11 @@ class ItemGetSerializer(serializers.ModelSerializer):
         relation = UserItemRelation.objects.get(
             item=instance, user=self.context['request'].user)
         return relation.like
+
+    def get_rating(self, instance):
+        if instance.annotated_dislikes == 0:
+            if instance.annotated_likes == 0:
+                return f"0%"
+            return f"100%"
+        percentage = int((instance.annotated_likes / (instance.annotated_likes + instance.annotated_dislikes)) * 100)
+        return f"{percentage}%"

@@ -1,3 +1,5 @@
+from django.db.models import Count, When, Case, Avg
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 
 from absconfig.settings import IMAGES_LIMIT_FOR_EACH_ITEM
@@ -58,14 +60,20 @@ class ItemCreateView(generics.CreateAPIView):
 
 class ItemListView(generics.ListAPIView):
     serializer_class = ItemGetSerializer
-    queryset = Item.objects.all()
+    queryset = Item.objects.all().annotate(
+        annotated_likes=Count(Case(When(users_to_item__like=True, then=1))),
+        annotated_dislikes=Count(Case(When(users_to_item__like=False, then=1))))
+    filter_backends = (DjangoFilterBackend, )
+    filterset_fields = ('category', )
 
 
 class ItemDetailView(generics.RetrieveAPIView,
                      generics.UpdateAPIView,
                      generics.DestroyAPIView):
     serializer_class = ItemGetSerializer
-    queryset = Item.objects.all()
+    queryset = Item.objects.all().annotate(
+        annotated_likes=Count(Case(When(users_to_item__like=True, then=1))),
+        annotated_dislikes=Count(Case(When(users_to_item__like=False, then=1))))
     permission_classes = [IsOwnerOrReadOnly]
 
     def perform_update(self, serializer):
@@ -98,8 +106,15 @@ class UserItemRelationView(generics.RetrieveAPIView,
                            generics.UpdateAPIView,
                            generics.DestroyAPIView):
     serializer_class = UserItemRelationSerializer
-    queryset = Item.objects.all()
+    queryset = UserItemRelation.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        obj, _ = UserItemRelation.objects.get_or_create(
+            user=self.request.user,
+            item_id=self.kwargs['pk']
+        )
+        return obj
 
     def perform_update(self, serializer):
         like = self.request.data['like']

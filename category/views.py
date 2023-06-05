@@ -19,7 +19,6 @@ class CategoryDetailView(generics.RetrieveAPIView,
     permission_classes = [perms.IsModeratorOrReadOnly]
 
 
-
 class TagListView(generics.ListAPIView,
                   generics.CreateAPIView):
     queryset = Tag.objects.all()
