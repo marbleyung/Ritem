@@ -1,17 +1,17 @@
 import os
 from pathlib import Path
 from .simplejwt import SIMPLE_JWT
+from dotenv import load_dotenv
 
-
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = True
+DEBUG =  os.getenv("DEBUG_MODE")
 
-ALLOWED_HOSTS = ['194.15.113.195', 'localhost', '127.0.0.1']
-
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
