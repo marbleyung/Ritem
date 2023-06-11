@@ -2,40 +2,37 @@ version: '3'
 
 services:
   web-backend:
-    build: 
-        context: .
-    command: sh -c 'source /venv/bin/activate &&  gunicorn --bind 0.0.0.0:8000 absconfig.wsgi:application'
+    build: .
+    command: gunicorn --bind 0.0.0.0:8000 absconfig.wsgi:application
     volumes:
       - .:/Ritem
-      - static_data:/Ritem/static
+      - static_data:/Ritem/static_cdn
     expose:
       - 8000
     depends_on:
       - database
-    env_file: .env
+    env_file: 
+      - .env
 
   database:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=ritem
-      - POSTGRES_USER=ritem_user
-      - POSTGRES_PASSWORD=ritem_password
-    expose:
-      - 5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   nginx:
     image: nginx:1.25.0-alpine
+    ports:
+      - 80:80
     depends_on:
       - web-backend
-    ports:
-      - "80:80"
     volumes:
-      - static:/Ritem/static
+      - static_data:/Ritem/static_cdn
       - ./nginx-conf.d:/etc/nginx/conf.d
 
 volumes:
   static_data:
-  static:
   postgres_data:
